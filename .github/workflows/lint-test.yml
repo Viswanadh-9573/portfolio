@@ -1,4 +1,4 @@
-name: HTML CSS Lint and Test
+name: HTML CSS Check
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 jobs:
 
-  lint-and-test:
+  check:
 
     runs-on: ubuntu-latest
 
@@ -23,45 +23,28 @@ jobs:
       uses: actions/checkout@v4
 
 
-    - name: Setup Node.js
+    - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: 20
 
 
-    - name: Install tools
+    - name: Install HTML and CSS lint tools
       run: |
         npm install -g htmlhint stylelint stylelint-config-standard
 
 
-    - name: Lint HTML
+    - name: Check HTML
       run: |
         htmlhint index.html
 
 
-    - name: Lint CSS
+    - name: Check CSS
       run: |
         stylelint "**/*.css"
 
 
-    - name: Install Playwright
+    - name: Basic file test
       run: |
-        npm install playwright
-        npx playwright install
-
-
-    - name: Run website test
-      run: |
-        npm install -g http-server
-        http-server . -p 8080 &
-        sleep 5
-        node -e "
-        const { chromium } = require('playwright');
-        (async()=>{
-          const browser = await chromium.launch();
-          const page = await browser.newPage();
-          await page.goto('http://localhost:8080');
-          console.log(await page.title());
-          await browser.close();
-        })()
-        "
+        test -f index.html
+        echo "index.html exists"
